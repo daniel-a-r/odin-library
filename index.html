@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odin Library</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <div class="header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>library</title><path d="M12,8A3,3 0 0,0 15,5A3,3 0 0,0 12,2A3,3 0 0,0 9,5A3,3 0 0,0 12,8M12,11.54C9.64,9.35 6.5,8 3,8V19C6.5,19 9.64,20.35 12,22.54C14.36,20.35 17.5,19 21,19V8C17.5,8 14.36,9.35 12,11.54Z" /></svg>
+    <span>Odin Library</span>
+  </div>
+  <div class="main">
+    <button class="open-modal">Add Book</button>
+    <div class="books-container">
+      <!-- <div class="book">
+        <div class="book-info">
+          <span class="title">title</span>
+          <span class="author">author</span>
+          <span class="pages"># pages</span>
+        </div>
+        <div class="book-buttons">
+          <button class="read-status not-read">Not Read</button>
+          <button class="delete">Delete</button>
+        </div>
+      </div> -->
+    </div>
+  </div>
+  <dialog>
+    <form action="#">
+      <div>
+        <label for="book-title">Title:</label>
+        <input type="text" id="book-title" required>
+      </div>
+      <div>
+        <label for="book-author">Author:</label>
+        <input type="text" id="book-author" required>
+      </div>
+      <div>
+        <label for="book-pages">Number of Pages:</label>
+        <input type="number" min="1" id="book-pages" required>
+      </div>
+      <div>
+        <label for="book-status">Have read?</label>
+        <select name="read-status" id="book-status">
+          <option value="1">Yes</option>
+          <option value="0" selected>No</option>
+        </select>
+      </div>
+      <div class="modal-buttons">
+        <button type="reset" class="close-modal">Cancel</button>
+        <button type="submit" class="add-book">Add</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

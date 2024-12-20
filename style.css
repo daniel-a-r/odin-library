@@ -1,0 +1,172 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-clr: rgb(240 240 240);
+  --secondary-clr: #3A5184;
+  --border-radius: 0.5rem;
+}
+
+body {
+  font-family: Inter, Roboto, sans-serif;
+  margin: 0;
+  background-color: var(--primary-clr);
+  /* display: grid;
+  grid-template-columns: 1fr minmax(350px, 65%) 1fr;
+  grid-template-rows: min-content 1fr;
+  grid-template-areas: 
+    '. header .'
+    '. main   .'; */
+}
+
+.header {
+  /* grid-column: 1 / -1; */
+  font-family: "Roboto Slab";
+  font-size: 2.75rem;
+  font-weight: 500;
+  color: var(--primary-clr);
+  background-color: var(--secondary-clr);
+  padding: 1.25rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+svg {
+  height: 3.5rem;
+  aspect-ratio: 1/1;
+  fill: var(--primary-clr);
+}
+
+.main {
+  /* grid-area: main; */
+  width: clamp(350px, 100%, 750px);
+  margin: 0 auto;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #587BC8;
+  color: var(--primary-clr);
+  font-weight: 500;
+}
+
+.open-modal {
+  margin: 1.5rem 0;
+  padding: 0.375rem 0;
+  font-size: 1.5rem;
+  width: 10ch;
+}
+
+.books-container {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.book {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background-color: var(--secondary-clr);
+  color: var(--primary-clr);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.book-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.75rem;
+}
+
+.author {
+  font-size: 1.25rem;
+}
+
+.pages {
+  font-size: 1rem;
+}
+
+.book-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+.book button {
+  font-size: 1.25rem;
+  padding: 0.5rem 0;
+  width: 9ch;
+  height: min-content;
+}
+
+button.delete {
+  background-color: #dc3545;
+}
+
+.read-status.not-read {
+  background-color: #6c757d;
+}
+
+.read-status.has-read {
+  background-color: #28a745;
+}
+
+dialog {
+  width: max-content;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+form div {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+label {
+  justify-self: end;
+}
+
+input {
+  font-size: 1rem;
+  /* border-radius: 0.25rem; */
+}
+
+select {
+  width: max-content;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.modal-buttons button {
+  font-size: 1.1rem;
+  padding: 0.25rem 0;
+  width: 9ch;
+  font-weight: 600;
+}
+
+.close-modal {
+  justify-self: end;
+}
