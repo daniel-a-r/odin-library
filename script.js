@@ -22,7 +22,6 @@ form.addEventListener('submit', (event) => {
 
   const book = new Book(title, author, pages, hasRead);
   library.push(book);
-  console.log(library);
   createBookEntry(book, library.length - 1);
   form.reset();
   modal.close();
