@@ -1,9 +1,6 @@
 const modal = document.querySelector('dialog');
 const openModalButton = document.querySelector('.open-modal');
 const closeModalButton = document.querySelector('.close-modal');
-const booksContainer = document.querySelector('.books-container');
-const readButton = document.querySelector('.read-status');
-const addBookButton = document.querySelector('.add-book');
 const form = document.querySelector('form');
 
 openModalButton.addEventListener('click', () => {
@@ -24,7 +21,6 @@ form.addEventListener('submit', (event) => {
   const hasRead = formData[3].value;
 
   const book = new Book(title, author, pages, hasRead);
-  console.log(book);
   createBookEntry(book);
   form.reset();
   modal.close();
@@ -47,6 +43,7 @@ Book.prototype.updateHasRead = function() {
 }
 
 const createBookEntry = (book) => {
+  const booksContainer = document.querySelector('.books-container');
   const bookDiv = document.createElement('div');
   bookDiv.className = 'book';
   bookDiv.dataset.bookId = book.id;
@@ -59,7 +56,6 @@ const createBookEntry = (book) => {
   addDeleteBookEventListener(book.id);
   addReadStatusEventListner(book.id);
   bookMap.set(book.id, book);
-  console.log(bookMap);
 }
 
 const createBookInfo = (book) => {
@@ -93,20 +89,20 @@ const createBookButtons = (hasRead) => {
   return buttonsDiv;
 }
 
-const getReadStatusButtonClass = (hasRead) => {
-  return (hasRead) ? 'has-read' : 'not-read';
-}
-
-const getBookStatusButtonText = (hasRead) => {
-  return (hasRead) ? 'Has Read' : 'Not Read';
-}
-
 const createReadStatusButton = (hasRead) => {
   const readStatusButton = document.createElement('button');
   readStatusButton.classList.add('read-status', getReadStatusButtonClass(hasRead));
   const buttonText = getBookStatusButtonText(hasRead);
   readStatusButton.appendChild(document.createTextNode(buttonText));
   return readStatusButton;
+}
+
+const getReadStatusButtonClass = (hasRead) => {
+  return (hasRead) ? 'has-read' : 'not-read';
+}
+
+const getBookStatusButtonText = (hasRead) => {
+  return (hasRead) ? 'Has Read' : 'Not Read';
 }
 
 const createDeleteBookButton = () => {
@@ -121,17 +117,22 @@ const addReadStatusEventListner = (bookId) => {
   const readStatusButton = document.querySelector(`.book[data-book-id="${bookId}"] .read-status`);
   readStatusButton.addEventListener('click', () => {
     const currentStatus = readStatusButton.classList[1];
-  
-    const newStatus = (currentStatus === 'not-read') ? 'has-read' : 'not-read';
-    readStatusButton.classList.replace(currentStatus, newStatus);
-  
-    const newTextContent = (currentStatus === 'not-read') ? 'Has Read' : 'Not Read';
+    const book = bookMap.get(bookId);
+    book.updateHasRead();
+
+    let newStatusClass = null;
+    let newTextContent = null;
+
+    if (book.hasRead) {
+      newStatusClass = 'has-read';
+      newTextContent = 'Has Read';
+    } else {
+      newStatusClass = 'not-read';
+      newTextContent = 'Not Read';
+    }
+
+    readStatusButton.classList.replace(currentStatus, newStatusClass);
     readStatusButton.textContent = newTextContent;
-
-    const bookObj = bookMap.get(bookId);
-    bookObj.updateHasRead();
-
-    console.log(bookMap);
   });
 }
 
@@ -141,7 +142,6 @@ const addDeleteBookEventListener = (bookId) => {
     const bookDiv = document.querySelector(`.book[data-book-id="${bookId}"]`);
     bookDiv.remove();
     bookMap.delete(bookId);
-    console.log(bookMap);
   });  
 }
 
@@ -166,11 +166,23 @@ const book3 = {
   hasRead: false
 }
 
-const bookList = [book1, book2, book3];
+const library = [book1, book2, book3];
 const bookMap = new Map();
 
-bookList.forEach((book) => {
-  const bookObj = new Book(book.title, book.author, book.pages, book.hasRead);
-  createBookEntry(bookObj);
-})
+// library.forEach((book) => {
+//   const bookObj = new Book(book.title, book.author, book.pages, book.hasRead);
+//   createBookEntry(bookObj);
+// })
+
+console.log(library);
+for (let i = 0; i < library.length; i++) {
+  const book = new Book(library[i].title, 
+                        library[i].author, 
+                        library[i].pages, 
+                        library[i].hasRead);
+
+  createBookEntry(book);
+  library[i] = book;
+}
+console.log(library);
 
