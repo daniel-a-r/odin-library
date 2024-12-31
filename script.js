@@ -171,7 +171,6 @@ const book3 = {
 };
 
 const library = [book1, book2, book3];
-const libraryMap = new Map();
 
 for (let i = 0; i < library.length; i++) {
   const book = new Book(library[i].title, 
