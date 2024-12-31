@@ -21,7 +21,9 @@ form.addEventListener('submit', (event) => {
   const hasRead = formData[3].value;
 
   const book = new Book(title, author, pages, hasRead);
-  createBookEntry(book);
+  library.push(book);
+  console.log(library);
+  createBookEntry(book, library.length - 1);
   form.reset();
   modal.close();
 });
@@ -31,32 +33,32 @@ function Book(title, author, pages, hasRead) {
   this.author = author;
   this.pages = pages;
   this.hasRead = (hasRead == true) ? true : false;
-  this.id = Book.counter;
-
-  Book.counter++;
 }
-
-Book.counter = 0;
 
 Book.prototype.updateHasRead = function() {
   this.hasRead = (this.hasRead) ? false : true;
-}
+};
 
-const createBookEntry = (book) => {
+const createLibrary = (library) => {
+  library.forEach((book, indx) => {
+    createBookEntry(book, indx)
+  });
+};
+
+const createBookEntry = (book, index) => {
   const booksContainer = document.querySelector('.books-container');
   const bookDiv = document.createElement('div');
   bookDiv.className = 'book';
-  bookDiv.dataset.bookId = book.id;
+  bookDiv.dataset.bookId = index;
 
   const bookInfo = createBookInfo(book);
-  const bookButtons = createBookButtons(book.hasRead, book.id);
+  const bookButtons = createBookButtons(book.hasRead, index);
 
   bookDiv.append(bookInfo, bookButtons);
   booksContainer.appendChild(bookDiv);
-  addDeleteBookEventListener(book.id);
-  addReadStatusEventListner(book.id);
-  bookMap.set(book.id, book);
-}
+  addDeleteBookEventListener(index);
+  addReadStatusEventListner(index);
+};
 
 const createBookInfo = (book) => {
   const title = document.createElement('span');
@@ -76,7 +78,7 @@ const createBookInfo = (book) => {
   bookInfo.append(title, author, pages);
 
   return bookInfo;
-}
+};
 
 const createBookButtons = (hasRead) => {
   const readStatusButton = createReadStatusButton(hasRead);
@@ -87,7 +89,7 @@ const createBookButtons = (hasRead) => {
   buttonsDiv.append(readStatusButton, deleteBookButton);
 
   return buttonsDiv;
-}
+};
 
 const createReadStatusButton = (hasRead) => {
   const readStatusButton = document.createElement('button');
@@ -95,15 +97,15 @@ const createReadStatusButton = (hasRead) => {
   const buttonText = getBookStatusButtonText(hasRead);
   readStatusButton.appendChild(document.createTextNode(buttonText));
   return readStatusButton;
-}
+};
 
 const getReadStatusButtonClass = (hasRead) => {
   return (hasRead) ? 'has-read' : 'not-read';
-}
+};
 
 const getBookStatusButtonText = (hasRead) => {
   return (hasRead) ? 'Has Read' : 'Not Read';
-}
+};
 
 const createDeleteBookButton = () => {
   const deleteBookButton = document.createElement('button');
@@ -111,13 +113,13 @@ const createDeleteBookButton = () => {
   deleteBookButton.appendChild(document.createTextNode('Delete'));
 
   return deleteBookButton;
-}
+};
 
 const addReadStatusEventListner = (bookId) => {
   const readStatusButton = document.querySelector(`.book[data-book-id="${bookId}"] .read-status`);
   readStatusButton.addEventListener('click', () => {
     const currentStatus = readStatusButton.classList[1];
-    const book = bookMap.get(bookId);
+    const book = library.at(bookId);
     book.updateHasRead();
 
     let newStatusClass = null;
@@ -134,16 +136,19 @@ const addReadStatusEventListner = (bookId) => {
     readStatusButton.classList.replace(currentStatus, newStatusClass);
     readStatusButton.textContent = newTextContent;
   });
-}
+};
 
 const addDeleteBookEventListener = (bookId) => {
   const deleteBookButton = document.querySelector(`.book[data-book-id="${bookId}"] .delete`);
+  const booksContainer = document.querySelector('.books-container');
   deleteBookButton.addEventListener('click', () => {
-    const bookDiv = document.querySelector(`.book[data-book-id="${bookId}"]`);
-    bookDiv.remove();
-    bookMap.delete(bookId);
+    while (booksContainer.hasChildNodes()) {
+      booksContainer.removeChild(booksContainer.firstChild);
+    }
+    library.splice(bookId, 1);
+    createLibrary(library);
   });  
-}
+};
 
 const book1 = {
   title: 'Pride and Prejudice',
@@ -157,32 +162,24 @@ const book2 = {
   author: 'George Orwell',
   pages: 298,
   hasRead: true
-}
+};
 
 const book3 = {
   title: 'One Hundred Years of Solitude',
   author: 'Gabriel Garcia Marquez',
   pages: 417,
   hasRead: false
-}
+};
 
 const library = [book1, book2, book3];
-const bookMap = new Map();
+const libraryMap = new Map();
 
-// library.forEach((book) => {
-//   const bookObj = new Book(book.title, book.author, book.pages, book.hasRead);
-//   createBookEntry(bookObj);
-// })
-
-console.log(library);
 for (let i = 0; i < library.length; i++) {
   const book = new Book(library[i].title, 
                         library[i].author, 
                         library[i].pages, 
                         library[i].hasRead);
-
-  createBookEntry(book);
   library[i] = book;
 }
-console.log(library);
 
+createLibrary(library);
