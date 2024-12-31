@@ -4,6 +4,7 @@ const closeModalButton = document.querySelector('.close-modal');
 const booksContainer = document.querySelector('.books-container');
 const readButton = document.querySelector('.read-status');
 const addBookButton = document.querySelector('.add-book');
+const form = document.querySelector('form');
 
 openModalButton.addEventListener('click', () => {
   modal.showModal();
@@ -11,20 +12,22 @@ openModalButton.addEventListener('click', () => {
 
 closeModalButton.addEventListener('click', () => {
   modal.close();
-})
+});
 
-addBookButton.addEventListener('click', () => {
-  const title = document.querySelector('#book-title');
-  const author = document.querySelector('#book-author');
-  const pages = document.querySelector('#book-pages');
-  const hasRead = document.querySelector('#book-status');
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
 
-  if (title.validity.valid && author.validity.valid && pages.validity.valid) {
-    const book = new Book(title.value, author.value, pages.value, hasRead.value);
-    createBookEntry(book);
-    document.querySelector('form').reset();
-    modal.close();
-  }
+  const formData = event.target;
+  const title = formData[0].value;
+  const author = formData[1].value;
+  const pages = formData[2].value;
+  const hasRead = formData[3].value;
+
+  const book = new Book(title, author, pages, hasRead);
+  console.log(book);
+  createBookEntry(book);
+  form.reset();
+  modal.close();
 });
 
 function Book(title, author, pages, hasRead) {
@@ -32,21 +35,31 @@ function Book(title, author, pages, hasRead) {
   this.author = author;
   this.pages = pages;
   this.hasRead = (hasRead == true) ? true : false;
+  this.id = Book.counter;
+
+  Book.counter++;
 }
 
-// Book.prototype.updateHasRead = function() {
-//   this.hasRead = (this.hasRead) ? false : true;
-// }
+Book.counter = 0;
+
+Book.prototype.updateHasRead = function() {
+  this.hasRead = (this.hasRead) ? false : true;
+}
 
 const createBookEntry = (book) => {
   const bookDiv = document.createElement('div');
   bookDiv.className = 'book';
+  bookDiv.dataset.bookId = book.id;
 
   const bookInfo = createBookInfo(book);
-  const bookButtons = createBookButtons(book.hasRead, bookDiv);
+  const bookButtons = createBookButtons(book.hasRead, book.id);
 
   bookDiv.append(bookInfo, bookButtons);
   booksContainer.appendChild(bookDiv);
+  addDeleteBookEventListener(book.id);
+  addReadStatusEventListner(book.id);
+  bookMap.set(book.id, book);
+  console.log(bookMap);
 }
 
 const createBookInfo = (book) => {
@@ -69,9 +82,9 @@ const createBookInfo = (book) => {
   return bookInfo;
 }
 
-const createBookButtons = (hasRead, bookDiv) => {
+const createBookButtons = (hasRead) => {
   const readStatusButton = createReadStatusButton(hasRead);
-  const deleteBookButton = createDeleteBookButton(bookDiv);
+  const deleteBookButton = createDeleteBookButton();
 
   const buttonsDiv = document.createElement('div')
   buttonsDiv.className = 'book-buttons';
@@ -93,22 +106,19 @@ const createReadStatusButton = (hasRead) => {
   readStatusButton.classList.add('read-status', getReadStatusButtonClass(hasRead));
   const buttonText = getBookStatusButtonText(hasRead);
   readStatusButton.appendChild(document.createTextNode(buttonText));
-  addReadStatusEventListner(readStatusButton);
   return readStatusButton;
 }
 
-const createDeleteBookButton = (bookDiv) => {
+const createDeleteBookButton = () => {
   const deleteBookButton = document.createElement('button');
   deleteBookButton.className = 'delete'
   deleteBookButton.appendChild(document.createTextNode('Delete'));
-  deleteBookButton.addEventListener('click', () => {
-    bookDiv.remove();
-  })
 
   return deleteBookButton;
 }
 
-const addReadStatusEventListner = (readStatusButton) => {
+const addReadStatusEventListner = (bookId) => {
+  const readStatusButton = document.querySelector(`.book[data-book-id="${bookId}"] .read-status`);
   readStatusButton.addEventListener('click', () => {
     const currentStatus = readStatusButton.classList[1];
   
@@ -117,7 +127,22 @@ const addReadStatusEventListner = (readStatusButton) => {
   
     const newTextContent = (currentStatus === 'not-read') ? 'Has Read' : 'Not Read';
     readStatusButton.textContent = newTextContent;
+
+    const bookObj = bookMap.get(bookId);
+    bookObj.updateHasRead();
+
+    console.log(bookMap);
   });
+}
+
+const addDeleteBookEventListener = (bookId) => {
+  const deleteBookButton = document.querySelector(`.book[data-book-id="${bookId}"] .delete`);
+  deleteBookButton.addEventListener('click', () => {
+    const bookDiv = document.querySelector(`.book[data-book-id="${bookId}"]`);
+    bookDiv.remove();
+    bookMap.delete(bookId);
+    console.log(bookMap);
+  });  
 }
 
 const book1 = {
@@ -142,11 +167,10 @@ const book3 = {
 }
 
 const bookList = [book1, book2, book3];
+const bookMap = new Map();
 
 bookList.forEach((book) => {
   const bookObj = new Book(book.title, book.author, book.pages, book.hasRead);
-  createBookEntry(book);
+  createBookEntry(bookObj);
 })
-
-
 
