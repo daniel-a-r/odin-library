@@ -12,16 +12,9 @@ body {
   font-family: Inter, Roboto, sans-serif;
   margin: 0;
   background-color: var(--primary-clr);
-  /* display: grid;
-  grid-template-columns: 1fr minmax(350px, 65%) 1fr;
-  grid-template-rows: min-content 1fr;
-  grid-template-areas: 
-    '. header .'
-    '. main   .'; */
 }
 
 .header {
-  /* grid-column: 1 / -1; */
   font-family: "Roboto Slab";
   font-size: 2.75rem;
   font-weight: 500;
@@ -41,7 +34,6 @@ svg {
 }
 
 .main {
-  /* grid-area: main; */
   width: clamp(350px, 100%, 750px);
   margin: 0 auto;
   margin-bottom: 1.5rem;
@@ -147,7 +139,6 @@ label {
 
 input {
   font-size: 1rem;
-  /* border-radius: 0.25rem; */
 }
 
 select {
