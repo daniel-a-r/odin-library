@@ -30,20 +30,22 @@ form.addEventListener('submit', (event) => {
   modal.close();
 });
 
-function Book(title, author, pages, hasRead) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.hasRead = (hasRead == true) ? true : false;
-  this.id = Book.counter;
+class Book {
+  static #counter = 0;
 
-  Book.counter++;
-}
+  constructor(title, author, pages, hasRead) {
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.hasRead = (hasRead == true) ? true : false;
+    this.id = Book.#counter;
+    
+    Book.#counter++;
+  }
 
-Book.counter = 0;
-
-Book.prototype.updateHasRead = function() {
-  this.hasRead = (this.hasRead) ? false : true;
+  updateHasRead() {
+    this.hasRead = (this.hasRead) ? false : true;
+  }
 }
 
 const createBookEntry = (book) => {
