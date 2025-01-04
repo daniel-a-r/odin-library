@@ -1,9 +1,6 @@
 const modal = document.querySelector('dialog');
 const openModalButton = document.querySelector('.open-modal');
 const closeModalButton = document.querySelector('.close-modal');
-const booksContainer = document.querySelector('.books-container');
-const readButton = document.querySelector('.read-status');
-const addBookButton = document.querySelector('.add-book');
 const form = document.querySelector('form');
 
 openModalButton.addEventListener('click', () => {
@@ -24,45 +21,43 @@ form.addEventListener('submit', (event) => {
   const hasRead = formData[3].value;
 
   const book = new Book(title, author, pages, hasRead);
-  console.log(book);
-  createBookEntry(book);
+  library.push(book);
+  createBookEntry(book, library.length - 1);
   form.reset();
   modal.close();
 });
 
-class Book {
-  static #counter = 0;
-
-  constructor(title, author, pages, hasRead) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.hasRead = (hasRead == true) ? true : false;
-    this.id = Book.#counter;
-    
-    Book.#counter++;
-  }
-
-  updateHasRead() {
-    this.hasRead = (this.hasRead) ? false : true;
-  }
+function Book(title, author, pages, hasRead) {
+  this.title = title;
+  this.author = author;
+  this.pages = pages;
+  this.hasRead = (hasRead == true) ? true : false;
 }
 
-const createBookEntry = (book) => {
+Book.prototype.updateHasRead = function() {
+  this.hasRead = (this.hasRead) ? false : true;
+};
+
+const createLibrary = (library) => {
+  library.forEach((book, indx) => {
+    createBookEntry(book, indx)
+  });
+};
+
+const createBookEntry = (book, index) => {
+  const booksContainer = document.querySelector('.books-container');
   const bookDiv = document.createElement('div');
   bookDiv.className = 'book';
-  bookDiv.dataset.bookId = book.id;
+  bookDiv.dataset.bookId = index;
 
   const bookInfo = createBookInfo(book);
-  const bookButtons = createBookButtons(book.hasRead, book.id);
+  const bookButtons = createBookButtons(book.hasRead, index);
 
   bookDiv.append(bookInfo, bookButtons);
   booksContainer.appendChild(bookDiv);
-  addDeleteBookEventListener(book.id);
-  addReadStatusEventListner(book.id);
-  bookMap.set(book.id, book);
-  console.log(bookMap);
-}
+  addDeleteBookEventListener(index);
+  addReadStatusEventListner(index);
+};
 
 const createBookInfo = (book) => {
   const title = document.createElement('span');
@@ -82,7 +77,7 @@ const createBookInfo = (book) => {
   bookInfo.append(title, author, pages);
 
   return bookInfo;
-}
+};
 
 const createBookButtons = (hasRead) => {
   const readStatusButton = createReadStatusButton(hasRead);
@@ -93,15 +88,7 @@ const createBookButtons = (hasRead) => {
   buttonsDiv.append(readStatusButton, deleteBookButton);
 
   return buttonsDiv;
-}
-
-const getReadStatusButtonClass = (hasRead) => {
-  return (hasRead) ? 'has-read' : 'not-read';
-}
-
-const getBookStatusButtonText = (hasRead) => {
-  return (hasRead) ? 'Has Read' : 'Not Read';
-}
+};
 
 const createReadStatusButton = (hasRead) => {
   const readStatusButton = document.createElement('button');
@@ -109,7 +96,15 @@ const createReadStatusButton = (hasRead) => {
   const buttonText = getBookStatusButtonText(hasRead);
   readStatusButton.appendChild(document.createTextNode(buttonText));
   return readStatusButton;
-}
+};
+
+const getReadStatusButtonClass = (hasRead) => {
+  return (hasRead) ? 'has-read' : 'not-read';
+};
+
+const getBookStatusButtonText = (hasRead) => {
+  return (hasRead) ? 'Has Read' : 'Not Read';
+};
 
 const createDeleteBookButton = () => {
   const deleteBookButton = document.createElement('button');
@@ -117,35 +112,42 @@ const createDeleteBookButton = () => {
   deleteBookButton.appendChild(document.createTextNode('Delete'));
 
   return deleteBookButton;
-}
+};
 
 const addReadStatusEventListner = (bookId) => {
   const readStatusButton = document.querySelector(`.book[data-book-id="${bookId}"] .read-status`);
   readStatusButton.addEventListener('click', () => {
     const currentStatus = readStatusButton.classList[1];
-  
-    const newStatus = (currentStatus === 'not-read') ? 'has-read' : 'not-read';
-    readStatusButton.classList.replace(currentStatus, newStatus);
-  
-    const newTextContent = (currentStatus === 'not-read') ? 'Has Read' : 'Not Read';
+    const book = library.at(bookId);
+    book.updateHasRead();
+
+    let newStatusClass = null;
+    let newTextContent = null;
+
+    if (book.hasRead) {
+      newStatusClass = 'has-read';
+      newTextContent = 'Has Read';
+    } else {
+      newStatusClass = 'not-read';
+      newTextContent = 'Not Read';
+    }
+
+    readStatusButton.classList.replace(currentStatus, newStatusClass);
     readStatusButton.textContent = newTextContent;
-
-    const bookObj = bookMap.get(bookId);
-    bookObj.updateHasRead();
-
-    console.log(bookMap);
   });
-}
+};
 
 const addDeleteBookEventListener = (bookId) => {
   const deleteBookButton = document.querySelector(`.book[data-book-id="${bookId}"] .delete`);
+  const booksContainer = document.querySelector('.books-container');
   deleteBookButton.addEventListener('click', () => {
-    const bookDiv = document.querySelector(`.book[data-book-id="${bookId}"]`);
-    bookDiv.remove();
-    bookMap.delete(bookId);
-    console.log(bookMap);
+    while (booksContainer.hasChildNodes()) {
+      booksContainer.removeChild(booksContainer.firstChild);
+    }
+    library.splice(bookId, 1);
+    createLibrary(library);
   });  
-}
+};
 
 const book1 = {
   title: 'Pride and Prejudice',
@@ -159,20 +161,23 @@ const book2 = {
   author: 'George Orwell',
   pages: 298,
   hasRead: true
-}
+};
 
 const book3 = {
   title: 'One Hundred Years of Solitude',
   author: 'Gabriel Garcia Marquez',
   pages: 417,
   hasRead: false
+};
+
+const library = [book1, book2, book3];
+
+for (let i = 0; i < library.length; i++) {
+  const book = new Book(library[i].title, 
+                        library[i].author, 
+                        library[i].pages, 
+                        library[i].hasRead);
+  library[i] = book;
 }
 
-const bookList = [book1, book2, book3];
-const bookMap = new Map();
-
-bookList.forEach((book) => {
-  const bookObj = new Book(book.title, book.author, book.pages, book.hasRead);
-  createBookEntry(bookObj);
-})
-
+createLibrary(library);
