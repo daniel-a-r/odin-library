@@ -27,16 +27,18 @@ form.addEventListener('submit', (event) => {
   modal.close();
 });
 
-function Book(title, author, pages, hasRead) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.hasRead = (hasRead == true) ? true : false;
-}
+class Book {
+  constructor(title, author, pages, hasRead) {
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.hasRead = (hasRead == true) ? true : false;
+  }
 
-Book.prototype.updateHasRead = function() {
-  this.hasRead = (this.hasRead) ? false : true;
-};
+  updateHasRead() {
+    this.hasRead = (this.hasRead) ? false : true;
+  }
+}
 
 const createLibrary = (library) => {
   library.forEach((book, indx) => {
